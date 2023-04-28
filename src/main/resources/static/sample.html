@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sample</title>
+    <meta name="description" content="HTML5" />
+    <meta name="author" content="Author" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  </head>
+  <body>
+    <form id="sample-form" action="/camel/sample" method="post">
+      <table>
+        <thead>
+          <th>Key</th>
+          <th>Value</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Key1</td>
+            <td><input type="text" name="key1" /></td>
+          </tr>
+          <tr>
+            <td>Key2</td>
+            <td><input type="text" name="key2" /></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input type="submit" name="Sumbit" value="Submit" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      function convertFormToJSON(form) {
+        const array = $(form).serializeArray();
+        const json = {};
+        $.each(array, function () {
+          json[this.name] = this.value || "";
+        });
+        return json;
+      }
+
+      $("#sample-form").on("submit", function (e) {
+        e.preventDefault();
+        const form = $(e.target);
+        const json = convertFormToJSON(form);
+        console.log(json);
+
+        var url = form.attr("action");
+
+        // Send the data using post
+        var posting = $.post(url, json);
+
+        // Put the results in a div
+        posting.done(function (data) {
+          var content = $(data).find("#content");
+          $("#result").empty().append(content);
+        });
+      });
+    </script>
+  </body>
+</html>

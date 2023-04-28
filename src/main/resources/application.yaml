@@ -1,0 +1,37 @@
+server:
+  port: 9980
+camel:
+  springboot:
+    name: Camel Insurance Spike
+    jmx-enabled: false
+management:
+  port: 9981
+endpoints:
+  enabled: false
+  health:
+    enabled: true
+quickstart:
+  generateOrderPeriod: 10s
+  processOrderPeriod: 30s
+spring:
+  freemarker:
+    suffix: .ftlh
+    cache: false
+    template-loader-path:
+      - classpath:/templates/
+  datasource:
+    insurance:
+      url: jdbc:postgresql://localhost:5432/insurance
+      jdbc-url: jdbc:postgresql://localhost:5432/insurance
+      username: jim
+      password: Wiomm$001
+      driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        ddl-auto: update
+        dialect: org.hibernate.dialect.PostgreSQLDialect
