@@ -20,30 +20,25 @@ James G Willmore - LJ Computing - (C) 2023
 */
 package net.ljcomputing.camelinsurancespike.camel.route;
 
-// @Component
-public class RestRoutes { // } extends RouteBuilder {
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.rest.RestBindingMode;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
-    //     @Override
-    //     public void configure() throws Exception {
-    //         restConfiguration()
-    //                 .component("servlet")
-    //                 .inlineRoutes(true)
-    //                 .bindingMode(RestBindingMode.json);
+/** Camel REST route. */
+@Component
+public class RestRoutes extends RouteBuilder {
 
-    //         rest("/hello")
-    //                 .post()
-    //                 .routeId("RestHello")
-    //                 .consumes(MediaType.APPLICATION_JSON_VALUE)
-    //                 .produces(MediaType.APPLICATION_JSON_VALUE)
-    //                 .to("direct:hello");
+    /** Configure the Camel REST routes. */
+    @Override
+    public void configure() throws Exception {
+        restConfiguration().component("servlet").bindingMode(RestBindingMode.auto);
 
-    //         rest("/sample")
-    //                 .post()
-    //                 .routeId("RestSample")
-    //                 .bindingMode(RestBindingMode.off)
-    //                 .consumes(MediaType.APPLICATION_JSON_VALUE)
-    //                 .produces(MediaType.APPLICATION_JSON_VALUE)
-    //                 .to("direct:sampletemplate")
-    //                 .responseMessage(200, "ok");
-    //     }
+        rest("/sample")
+                .post()
+                .routeId("RestSample")
+                .consumes(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_XML_VALUE)
+                .to("direct:sampletemplate");
+    }
 }

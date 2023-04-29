@@ -39,6 +39,7 @@ public class FreemarkerRoutes extends RouteBuilder {
 
         from("direct:sampletemplate")
                 .routeId("DirectSampleTemplate")
+                .log("DirectSampleTemplate - body: ${body}")
                 .to("freemarker:classpath:templates/template.ftlh")
                 .to(outFile);
     }

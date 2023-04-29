@@ -35,9 +35,8 @@ public class DirectRoutes extends RouteBuilder {
                 .routeId("DirectJsonToSample")
                 .unmarshal()
                 .json(Sample.class)
-                .log("Body: ${body}")
+                .log("DirectJsonToSample - body: ${body}")
                 .end();
-        // from("direct:hello").routeId("DirectHello").to("bean:emptyService?method=retrieve").end();
 
         // from("direct:sample")
         //         .routeId("DirectSample")

@@ -23,7 +23,9 @@ package net.ljcomputing.camelinsurancespike;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -39,7 +41,6 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
-import org.apache.camel.test.spring.junit5.MockEndpoints;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -48,17 +49,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 @CamelSpringBootTest
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(OrderAnnotation.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@MockEndpoints
 class CamelInsuranceSpikeApplicationTests {
     private static final Logger log =
             LoggerFactory.getLogger(CamelInsuranceSpikeApplicationTests.class);
+
+    @LocalServerPort private int port;
+
+    @Autowired private TestRestTemplate testRestTemplate;
 
     @Autowired private CamelContext camelContext;
 
@@ -77,7 +88,7 @@ class CamelInsuranceSpikeApplicationTests {
         return sample;
     }
 
-    private static final String getExpected(final String filename) throws IOException {
+    private static final String getExpectedSample(final String filename) throws IOException {
         Path templateXml =
                 Path.of(
                         System.getProperty("user.dir"),
@@ -122,7 +133,7 @@ class CamelInsuranceSpikeApplicationTests {
                     r.weaveAddLast().log("endpoint: ${body}");
                 });
 
-        mockEndpoint.expectedBodiesReceived(getExpected(routeId));
+        mockEndpoint.expectedBodiesReceived(getExpectedSample(routeId));
         mockEndpoint.setResultWaitTime(600);
         mockEndpoint.setAssertPeriod(600);
 
@@ -133,7 +144,6 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(11)
-    // works
     void testDirectJsonToSample() throws Exception {
         String routeId = "DirectJsonToSample";
         String routeUri = "direct:jsonToSample";
@@ -171,7 +181,7 @@ class CamelInsuranceSpikeApplicationTests {
                     r.weaveAddLast().log("endpoint: ${body}");
                 });
 
-        mockEndpoint.expectedBodiesReceived(getExpected(routeId));
+        mockEndpoint.expectedBodiesReceived(getExpectedSample(routeId));
         mockEndpoint.setResultWaitTime(600);
         mockEndpoint.setAssertPeriod(600);
 
@@ -225,5 +235,26 @@ class CamelInsuranceSpikeApplicationTests {
         assertNotNull(obj.getId());
         insured.setId(obj.getId());
         assertEquals(insured, obj);
+    }
+
+    @Test
+    @Order(20)
+    void testRestSample() throws Exception {
+        final String baseUrl = "http://localhost:" + port + "/camel/sample/";
+        final URI uri = new URI(baseUrl);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE);
+
+        final HttpEntity<Sample> request = new HttpEntity<>(getSample(), headers);
+        final ResponseEntity<String> result =
+                testRestTemplate.postForEntity(uri, request, String.class);
+
+        log.debug("result - body: [{}]", result.getBody());
+
+        final XmlMapper xmlMapper = new XmlMapper();
+        final Sample sampleResult = xmlMapper.readValue(result.getBody(), getSample().getClass());
+        log.debug("sample results: [{}]", sampleResult.toString());
     }
 }

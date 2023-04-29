@@ -52,6 +52,9 @@ dependencies {
   implementation 'org.apache.camel.springboot:camel-sql-starter'
   implementation 'solutions.elevation.camel:camel-openhtmltopdf:1.0.2'
   implementation 'org.postgresql:postgresql:42.6.0'
+  implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0'
 
 	compileOnly 'org.projectlombok:lombok'
 

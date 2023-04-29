@@ -20,6 +20,7 @@ James G Willmore - LJ Computing - (C) 2023
 */
 package net.ljcomputing.camelinsurancespike.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,6 +32,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
+@JacksonXmlRootElement(localName = "root")
 public class Sample implements Serializable {
     private static final long serialVersionUID = -1520325115722308711L;
     /** Key 1 */
