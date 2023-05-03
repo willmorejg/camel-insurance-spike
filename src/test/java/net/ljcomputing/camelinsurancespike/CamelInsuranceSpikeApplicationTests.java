@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +129,18 @@ class CamelInsuranceSpikeApplicationTests {
 
         log.debug("insured all: [{}]", result);
         return result;
+    }
+
+    private void insuredInsert() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String nowString = now.format(formatter);
+
+        jdbcTemplate.update(
+                "insert into insured (given_name, middle_name, surname) values(?,?,?)",
+                "James" + nowString,
+                "George" + nowString,
+                "Willmore" + nowString);
     }
 
     private Integer getInsuredRecordCnt() {
@@ -295,6 +309,7 @@ class CamelInsuranceSpikeApplicationTests {
     @Test
     @Order(21)
     void testRestInsuredAll() throws Exception {
+        insuredInsert();
         final String baseUrl = "http://localhost:" + port + "/camel/insured";
         final URI uri = new URI(baseUrl);
         final HttpHeaders headers = new HttpHeaders();
@@ -318,6 +333,7 @@ class CamelInsuranceSpikeApplicationTests {
     @Test
     @Order(22)
     void testRestInsuredById() throws Exception {
+        insuredInsert();
         final Insured expected = getInsuredRecordAll().get(0);
         final Long expectedId = expected.getId();
         final String baseUrl = "http://localhost:" + port + "/camel/insured/" + expectedId;

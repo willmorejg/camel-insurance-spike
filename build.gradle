@@ -134,10 +134,10 @@ doxygen {
   optimize_output_java true
 }
 
-tasks.named('test') {
-	testLogging.showStandardStreams = true
+test {
+  testLogging.showStandardStreams = true
 	finalizedBy jacocoTestReport
-	useJUnitPlatform()
+  useJUnitPlatform()
 }
 
 jacocoTestCoverageVerification {
