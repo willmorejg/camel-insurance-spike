@@ -20,13 +20,8 @@ James G Willmore - LJ Computing - (C) 2023
 */
 package net.ljcomputing.camelinsurancespike.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -37,30 +32,23 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
-@Entity
-@Table(name = "insured")
 public class Insured implements Serializable {
     private static final long serialVersionUID = -6852426499153687162L;
 
     /** Entity id. */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial")
     private Long id;
 
     /** Insured's given name. */
-    @Column(name = "given_name")
+    @JsonProperty("given_name")
     private String givenName;
 
     /** Insured's middlename. */
-    @Column(name = "middle_name")
+    @JsonProperty("middle_name")
     private String middleName;
 
     /** Insured's surname. */
-    @Column(name = "surname")
     private String surname;
 
     /** Insured's suffix. */
-    @Column(name = "suffix")
     private String suffix;
 }

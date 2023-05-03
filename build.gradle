@@ -31,13 +31,15 @@ repositories {
 
 
 dependencies {
-  implementation(platform('org.apache.camel.springboot:camel-spring-boot-bom:3.20.3'))
+  implementation(platform('org.apache.camel.springboot:camel-spring-boot-dependencies:3.20.3'))
 
 	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.apache.camel.springboot:camel-spring-boot-starter'
+	implementation 'org.apache.camel.springboot:camel-core-starter'
+	implementation 'org.apache.camel.springboot:camel-http-starter'
 	implementation 'org.apache.camel.springboot:camel-file-starter'
 	implementation 'org.apache.camel.springboot:camel-log-starter'
 	implementation 'org.apache.camel.springboot:camel-servlet-starter'
@@ -50,11 +52,16 @@ dependencies {
   implementation 'org.apache.camel.springboot:camel-xj-starter'
   implementation 'org.apache.camel.springboot:camel-spring-jdbc-starter'
   implementation 'org.apache.camel.springboot:camel-sql-starter'
+  implementation 'org.apache.camel.springboot:camel-jpa-starter'
+  implementation 'org.apache.camel.springboot:camel-stream-starter'
   implementation 'solutions.elevation.camel:camel-openhtmltopdf:1.0.2'
   implementation 'org.postgresql:postgresql:42.6.0'
   implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
   implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
   implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0'
+  implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+
+  implementation project(":insured")
 
 	compileOnly 'org.projectlombok:lombok'
 
@@ -143,4 +150,8 @@ jacocoTestCoverageVerification {
       }
     }
   }
+}
+
+task restart {
+  dependsOn classes
 }

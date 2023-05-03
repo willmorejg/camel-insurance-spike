@@ -23,6 +23,7 @@ package net.ljcomputing.camelinsurancespike.constants;
 /** Insured SQL statements. */
 public enum InsuredSql {
     SELECT_COUNT("select count(id) as \"cnt\" from insured"),
+    SELECT_ALL("select id, given_name, middle_name, surname, suffix from insured"),
     INSERT(
             "insert into insured (given_name, middle_name, surname, suffix)"
                     + " values(:#${body.givenName}, :#${body.middleName}, :#${body.surname},"

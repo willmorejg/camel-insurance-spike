@@ -53,6 +53,11 @@ public class JdbcRoutes extends RouteBuilder {
                 .to("sql:" + InsuredSql.SELECT_COUNT.sql("insurance"))
                 .log("Out: ${body}");
 
+        from("direct:jdbcinsuredselectall")
+                .routeId("DirectJdbcInsuredSelectAll")
+                .to("sql:" + InsuredSql.SELECT_ALL.sql("insurance"))
+                .log("Out: ${body}");
+
         from("direct:jdbcinsuredinsert")
                 .routeId("DirectJdbcInsuredInsert")
                 .setHeader(SqlConstants.SQL_RETRIEVE_GENERATED_KEYS, constant(true))

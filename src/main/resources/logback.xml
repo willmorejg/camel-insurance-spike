@@ -36,7 +36,7 @@
     <logger name="org.hibernate" level="ERROR"/>
     <logger name="com.zaxxer.hikari" level="ERROR" />
     <logger name="org.apache.camel" level="DEBUG" />
-    <logger name="net.ljcomputing" level="INFO" />
+    <logger name="net.ljcomputing" level="DEBUG" />
 
     <root>
         <level value="DEBUG" />

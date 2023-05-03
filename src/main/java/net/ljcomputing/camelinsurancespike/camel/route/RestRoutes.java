@@ -34,11 +34,27 @@ public class RestRoutes extends RouteBuilder {
     public void configure() throws Exception {
         restConfiguration().component("servlet").bindingMode(RestBindingMode.auto);
 
-        rest("/sample")
+        rest("/sample/")
                 .post()
                 .routeId("RestSample")
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
                 .produces(MediaType.APPLICATION_XML_VALUE)
                 .to("direct:sampletemplate");
+
+        rest("/insured")
+                // get all
+                .get()
+                .routeId("RestInsuredSelectAll")
+                .bindingMode(RestBindingMode.off)
+                .consumes(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_JSON_VALUE)
+                .to("vm:insuredselectall")
+                // get by id
+                .get("/{id}")
+                .routeId("RestInsuredSelectById")
+                .bindingMode(RestBindingMode.off)
+                .consumes(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_JSON_VALUE)
+                .to("vm:insuredselectbyid");
     }
 }

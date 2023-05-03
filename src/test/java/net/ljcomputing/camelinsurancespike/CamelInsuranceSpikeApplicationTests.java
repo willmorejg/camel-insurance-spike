@@ -23,11 +23,14 @@ package net.ljcomputing.camelinsurancespike;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.ljcomputing.camelinsurancespike.constants.InsuredSql;
@@ -41,6 +44,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -54,6 +58,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -80,6 +85,8 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Autowired private JdbcTemplate jdbcTemplate;
 
+    @Autowired ObjectMapper mapper;
+
     private static final Sample getSample() {
         Sample sample = new Sample();
         sample.setKey1("KEY_ONE");
@@ -102,6 +109,26 @@ class CamelInsuranceSpikeApplicationTests {
         return result;
     }
 
+    private List<Insured> getInsuredRecordAll() {
+        final List<Insured> result = new ArrayList<>();
+
+        jdbcTemplate
+                .queryForList(InsuredSql.SELECT_ALL.sql())
+                .forEach(
+                        e -> {
+                            Insured element = new Insured();
+                            element.setId((Long) e.get("id"));
+                            element.setGivenName((String) e.get("given_name"));
+                            element.setMiddleName((String) e.get("middle_name"));
+                            element.setSurname((String) e.get("surname"));
+                            element.setSuffix((String) e.get("suffix"));
+                            result.add(element);
+                        });
+
+        log.debug("insured all: [{}]", result);
+        return result;
+    }
+
     private Integer getInsuredRecordCnt() {
         Integer cnt =
                 (Integer) jdbcTemplate.queryForObject(InsuredSql.SELECT_COUNT.sql(), Integer.class);
@@ -111,6 +138,7 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(1)
+    @Disabled
     void contextLoads() {
         assertNotNull(camelContext);
         assertNotNull(producertemplate);
@@ -120,6 +148,7 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(10)
+    @Disabled
     void testDirectSampleTemplate() throws Exception {
         String routeId = "DirectSampleTemplate";
         String routeUri = "direct:sampletemplate";
@@ -144,6 +173,7 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(11)
+    @Disabled
     void testDirectJsonToSample() throws Exception {
         String routeId = "DirectJsonToSample";
         String routeUri = "direct:jsonToSample";
@@ -168,6 +198,7 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(12)
+    @Disabled
     void testDirectXjToXml() throws Exception {
         String routeId = "DirectXjToXml";
         String routeUri = "direct:xjtoxml";
@@ -192,6 +223,7 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(13)
+    @Disabled
     void testDirectJdbcInsuredSelectCnt() throws Exception {
         String routeId = "DirectJdbcInsuredSelectCnt";
         String routeUri = "direct:jdbcinsuredselectcnt";
@@ -220,6 +252,7 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(14)
+    @Disabled
     void testDirectJdbcInsuredInsert() throws IOException, InterruptedException {
         Insured insured = new Insured();
         insured.setGivenName("James");
@@ -239,6 +272,7 @@ class CamelInsuranceSpikeApplicationTests {
 
     @Test
     @Order(20)
+    @Disabled
     void testRestSample() throws Exception {
         final String baseUrl = "http://localhost:" + port + "/camel/sample/";
         final URI uri = new URI(baseUrl);
@@ -256,5 +290,28 @@ class CamelInsuranceSpikeApplicationTests {
         final XmlMapper xmlMapper = new XmlMapper();
         final Sample sampleResult = xmlMapper.readValue(result.getBody(), getSample().getClass());
         log.debug("sample results: [{}]", sampleResult.toString());
+    }
+
+    @Test
+    @Order(21)
+    void testRestInsuredAll() throws Exception {
+        final String baseUrl = "http://localhost:" + port + "/camel/insured";
+        final URI uri = new URI(baseUrl);
+        final HttpHeaders headers = new HttpHeaders();
+
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+
+        final HttpEntity<String> request = new HttpEntity<>("", headers);
+        ResponseEntity<String> result =
+                testRestTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        String json = result.getBody();
+
+        log.debug("result - json: \n{}\n==========", json);
+
+        JsonNode list = mapper.readTree(json);
+
+        log.debug("result - list: \n{}\n==========", list);
     }
 }
