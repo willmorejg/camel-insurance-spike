@@ -44,14 +44,14 @@ public class RestRoutes extends RouteBuilder {
         rest("/insured")
                 // get all
                 .get()
-                .routeId("RestInsuredSelectAll")
+                .routeId("RestGetInsuredAll")
                 .bindingMode(RestBindingMode.off)
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .to("vm:insuredselectall")
                 // get by id
                 .get("/{id}")
-                .routeId("RestInsuredSelectById")
+                .routeId("RestGetInsuredById")
                 .bindingMode(RestBindingMode.off)
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
                 .produces(MediaType.APPLICATION_JSON_VALUE)

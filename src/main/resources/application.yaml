@@ -41,8 +41,8 @@ spring:
     insurance:
       url: jdbc:postgresql://localhost:5432/insurance
       jdbc-url: jdbc:postgresql://localhost:5432/insurance
-      username: jim
-      password: Wiomm$001
+      username: insured
+      password: insured
       driver-class-name: org.postgresql.Driver
   jpa:
     database: postgresql

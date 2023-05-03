@@ -314,4 +314,29 @@ class CamelInsuranceSpikeApplicationTests {
 
         log.debug("result - list: \n{}\n==========", list);
     }
+
+    @Test
+    @Order(22)
+    void testRestInsuredById() throws Exception {
+        final Insured expected = getInsuredRecordAll().get(0);
+        final Long expectedId = expected.getId();
+        final String baseUrl = "http://localhost:" + port + "/camel/insured/" + expectedId;
+        final URI uri = new URI(baseUrl);
+        final HttpHeaders headers = new HttpHeaders();
+
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+
+        final HttpEntity<String> request = new HttpEntity<>("", headers);
+        ResponseEntity<String> result =
+                testRestTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        String json = result.getBody();
+
+        log.debug("result - json: \n{}\n==========", json);
+
+        JsonNode list = mapper.readTree(json);
+
+        log.debug("result - list: \n{}\n==========", list);
+    }
 }
